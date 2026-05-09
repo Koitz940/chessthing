@@ -1,0 +1,46 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   getSet.cpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gcassi-d <gcassi-d@42urduliz.com>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/04/25 13:14:09 by gcassi-d          #+#    #+#             */
+/*   Updated: 2026/05/06 21:09:34 by gcassi-d         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "Board.hpp"
+
+std::vector<std::vector<int>> Board::getBoard() const {
+	std::vector<std::vector<int>> a = std::vector<std::vector<int>>();
+	for (int i = 0; i < 8; i++) {
+		a.push_back(std::vector<int>());
+		for (Piece c: this->board[i]) {
+			a[i].push_back(c.getPiece());
+		}
+	}
+
+	return(a);
+}
+
+bool Board::getwkc() const {return this->wkc;}
+bool Board::getwqc() const {return this->wqc;}
+bool Board::getbkc() const {return this->bkc;}
+bool Board::getbqc() const {return this->bkc;}
+int Board::getTurn() const {return this->bqc;}
+int Board::getMoveRule() const {return this->moveRule;}
+int Board::getFullMoves() const {return this->fullMoves;}
+
+bool operator==(const coords& a, const coords& b)
+{
+	return a.file == b.file && a.rank == b.rank;
+}
+
+coords Board::getEnPassant() const {
+	return this->enPassant;
+}
+
+void Board::setEnPassant(coords c) {
+	this->enPassant = c;
+}
