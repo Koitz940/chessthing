@@ -42,6 +42,16 @@ enum status {
 	DRAW
 };
 
+typedef enum moveType {
+	MOVE,
+	CAPTURE,
+	Q,
+	R,
+	B,
+	N,
+	CASTLE,
+} moveType;
+
 typedef struct position {
 	size_t r1;
 	size_t r2;
@@ -58,6 +68,11 @@ typedef struct coordinates {
 	int file;
 }	coords;
 
+typedef struct move {
+	coords to;
+	moveType t;
+} move;
+
 class Board;
 
 class Piece {
@@ -67,16 +82,19 @@ class Piece {
 		int rank;
 		int file;
 
-		int	getLegalNoneMoves(Board& board);
-		int	getLegalPawnMoves(Board& board);
-		int	getLegalBishopMoves(Board& board);
-		int	getLegalKnightMoves(Board& board);
-		int getLegalRookMoves(Board& board);
-		int	getLegalQueenMoves(Board& board);
-		int	getLegalKingMoves(Board& board);
+		int	calculateLegalNoneMoves(Board& board);
+		int	calculateLegalPawnMoves(Board& board);
+		int	calculateLegalBishopMoves(Board& board);
+		int	calculateLegalKnightMoves(Board& board);
+		int calculateLegalRookMoves(Board& board);
+		int	calculateLegalQueenMoves(Board& board);
+		int	calculateLegalKingMoves(Board& board);
 
 		typedef int (Piece::*MoveFunc)(Board&);
 		const MoveFunc moves[8];
+		std::vector<move> legalMoves;
+
+		void addMove(int rank, int file, moveType type);
 		
 	public:
 		Piece();
@@ -87,7 +105,9 @@ class Piece {
 
 		Piece& operator=(const Piece& other);
 
-		int	getLegalMoves(Board& board);
+		int	calculateLegalMoves(Board& board);
+		const std::vector<move>& getLegalMoves() const;
+		
 		bool isLegal(coords coord);
 
 		int getType() const;
@@ -96,9 +116,6 @@ class Piece {
 		void setCol(int col);
 		int getPiece() const;
 		void setPiece(int piece);
-
-		std::vector<coords> legalMoves;
-		std::vector<coords> legalCaptures;
 };
 
 #endif

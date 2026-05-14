@@ -178,7 +178,7 @@ void Board::fromFen(const std::string& fen) {
 					}
 					wk = true;
 				}
-				if ((c == 'p' || c == 'P') && rank == 0 || rank == 7)
+				if ((c == 'p' || c == 'P') && (rank == 0 || rank == 7))
 					throw(FenError("Pawn on first or last rank"));
 				file++;
 			}
@@ -208,7 +208,7 @@ void Board::fromFen(const std::string& fen) {
 	} else {
 		if (sections[3][0] > 'h' || sections[3][0] < 'a' || (sections[3][1] != '3' && sections[3][1] != '6'))
 			throw (FenError("Incorrect en-passant-able pawn representation"));
-		this->enPassant = getCoords(sections[3][1] == '6'? 4: 3, sections[3][0] - 'a');
+		this->makePassable(getCoords(sections[3][1] == '3'? 3: 4, sections[3][0] - 'a'));
 	}
 	
 	if (sections[4].size() > 3 || sections[4].size() == 0)

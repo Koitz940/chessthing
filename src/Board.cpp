@@ -168,6 +168,8 @@ void Board::makePassable(const coords c) {
 	if (this->board[c.rank][c.file].getType() == PAWN) {
 		if ((c.rank == 4 && this->board[c.rank][c.file].getCol() == WHITE) || (c.rank == 3 && this->board[c.rank][c.file].getCol() == BLACK))
 			throw(FenError("wrong colour pawn to make passable in given rank"));
+		if (this->board[c.rank == 3? 2: 5][c.file].getType() || this->board[c.rank == 3? 1: 6][c.file].getType())
+			throw(FenError("En-Passant-able Pawn could have never gotten to given coordinates, there are pieces in the way"));
 		this->enPassant = c;
 	}
 	else {
