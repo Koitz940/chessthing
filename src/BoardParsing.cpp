@@ -247,7 +247,20 @@ std::ostream& operator<<(std::ostream& os, const Board& chess) {
 		os << std::endl;
 	}
 	os << std::endl;
-	os << "    a b c d e f g h";
+	os << "    a b c d e f g h\n\n";
+	os << chess.getfen() << "\n\nPOSIBLE MOVES\n---------------------------\n";
+	for (int i = 0; i < 8; i++) {
+		for (int j = 0; j < 8; j++) {
+			if (chess.board[i][j].getCol() == chess.getTurn()) {
+				c = chess.letters[abs(board[i][j])];
+				os << (char)('a' + j) << (char)('1' + i) << (char)((board[i][j] > 0)? toupper(c): c) << ":"; 
+				for (move m: chess.board[i][j].getLegalMoves()) {
+					os << (char)(m.to.file + 'a') << (char)(m.to.rank + '1') << " ";
+				}
+				os << "\n";
+			}
+		}
+	}
 
 	return (os);
 }

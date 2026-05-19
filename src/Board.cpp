@@ -128,29 +128,25 @@ const char* Board::FenError::what() const throw() {return this->msg;}
 const char* Board::UnknownStringRepresentationError::what() const throw() {return "Unknown game string representation type";}
 
 bool Board::isCheck(int col) {
-	/* coords king = this->Pieces[KING * col][0];
-	Piece& cur = this->board[0][0];
-
-	for (int i = 1; i < 1 + KNIGHT; i++) {
-		for (coords c: this->Pieces[-i * col]) {
-			cur = this->board[c.rank][c.file];
-			if (std::find(cur.legalCaptures.begin(), cur.legalCaptures.end(), king) != cur.legalCaptures.end()) {
-				return (true);
-			}
-		} 
+	for (int i = 0; i < 8; i++) {
+		for (int j = 0; j < 8; j++) {
+			if (this->board[i][j].getType() == KING && this->board[i][j].getCol() == col)
+				return (this->isAtacked(col, getCoords(i, j)));
+		}
 	}
-	return (false); */
-	(void)col;
 	return (false);
 } 
 
-int Board::getLegalMoves() {
+int Board::updateLegalMoves() {
 	int count = 0;
+
+	std::cout << *this;
 	
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
 			if (this->board[i][j].getCol() == this->turn) {
-				count += this->board[i][j].getLegalMoves(*this);
+				count += this->board[i][j].calculateLegalMoves(*this);
+				std::cout << *this;
 			}
 		}
 	}
@@ -182,4 +178,101 @@ void Board::place(coords from, coords to) {
 		this->board[to.rank][to.file] = this->board[from.rank][from.file];
 		this->board[from.rank][from.file] = Piece();
 	}
+}
+
+bool Board::isAtacked(int col, coords c) {
+	int r = c.rank;
+	int f = c.file;
+	int nr[] = {1, 1, -1, -1, 2, -2, 2, -2};
+	int nf[] = {2, -2, 2, -2, 1, 1, -1, -1};
+	int pf[] = {1, -1};
+
+	//king threat
+	for (int i = -1; i < 2; i++) {
+		for (int j = -1; j < 2; j++) {
+			if (this->onBoard(r + i, f + j) && this->board[r + i][f + j].getPiece() == -col * KING) {
+				return (true);
+			}
+		}
+	}
+
+	//knight threat
+	for (int i = 0; i < 8; i++) {
+		if (this->onBoard(r + nr[i], f + nf[i]) && this->board[r + nr[i]][f + nf[i]].getPiece() == -col * KNIGHT)
+			return (true);
+	}
+
+	//pawn threat
+	for (int i = 0; i < 2; i++) {
+		if (this->onBoard(r + col, f  + pf[i]) && this->board[r + col][f + pf[i]].getPiece() == -col * PAWN)
+			return (true);
+	}
+
+	//rook and queen orthogonal threats
+	for (int i = 1; this->onBoard(r + i, f); i++) {
+		if (!this->board[r + i][f].getType())
+			continue;
+		if (this->board[r + i][f].getPiece() == -col * ROOK || this->board[r + i][f].getPiece() == -col * QUEEN)
+			return (true);
+		break;
+	}
+
+	for (int i = -1; this->onBoard(r + i, f); i--) {
+		if (!this->board[r + i][f].getType())
+			continue;
+		if (this->board[r + i][f].getPiece() == -col * ROOK || this->board[r + i][f].getPiece() == -col * QUEEN)
+			return (true);
+		break;
+	}
+
+	for (int i = 1; this->onBoard(r, f + i); i++) {
+		if (!this->board[r][f + i].getType())
+			continue;
+		if (this->board[r][f + i].getPiece() == -col * ROOK || this->board[r][f + i].getPiece() == -col * QUEEN)
+			return (true);
+		break;
+	}
+
+	for (int i = -1; this->onBoard(r, f + i); i--) {
+		if (!this->board[r][f + i].getType())
+			continue;
+		if (this->board[r][f + i].getPiece() == -col * ROOK || this->board[r][f + i].getPiece() == -col * QUEEN)
+			return (true);
+		break;
+	}
+
+	//bishops and queen diagonal threats
+	for (int i = 1; this->onBoard(r + i, f + i); i++) {
+		if (!this->board[r + i][f + i].getType())
+			continue;
+		if (this->board[r + i][f + i].getPiece() == -col * BISHOP || this->board[r + i][f + i].getPiece() == -col * QUEEN)
+			return (true);
+		break;
+	}
+
+	for (int i = 1; this->onBoard(r + i, f - i); i++) {
+		if (!this->board[r + i][f - i].getType())
+			continue;
+		if (this->board[r + i][f - i].getPiece() == -col * BISHOP || this->board[r + i][f - i].getPiece() == -col * QUEEN)
+			return (true);
+		break;
+	}
+
+	for (int i = 1; this->onBoard(r - i, f + i); i++) {
+		if (!this->board[r - i][f + i].getType())
+			continue;
+		if (this->board[r - i][f + i].getPiece() == -col * BISHOP || this->board[r - i][f + i].getPiece() == -col * QUEEN)
+			return (true);
+		break;
+	}
+
+	for (int i = 1; this->onBoard(r - i, f - i); i++) {
+		if (!this->board[r - i][f - i].getType())
+			continue;
+		if (this->board[r - i][f - i].getPiece() == -col * BISHOP || this->board[r - i][f - i].getPiece() == -col * QUEEN)
+			return (true);
+		break;
+	}
+
+	return (false);
 }

@@ -51,16 +51,22 @@ class Board {
 		bool getwqc() const;
 		bool getbkc() const;
 		bool getbqc() const;
+		void setwkc(bool right);
+		void setwqc(bool right);
+		void setbkc(bool right);
+		void setbqc(bool right);
 		int getTurn() const;
 		int getMoveRule() const;
 		int getFullMoves() const;
 		bool isValidFENchar(int c) const;
 		int	charToInt(int c) const;
 		bool isCheck(int col);
-		int getLegalMoves();
+		bool isAtacked(int col, coords c);
+		int updateLegalMoves();
 		void place(coords from, coords to);
 		coords getEnPassant() const;
 		void setEnPassant(coords c);
+		bool onBoard(int rank, int file);
 
 		const char letters[9];
 

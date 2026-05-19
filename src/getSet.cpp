@@ -28,7 +28,7 @@ bool Board::getwkc() const {return this->wkc;}
 bool Board::getwqc() const {return this->wqc;}
 bool Board::getbkc() const {return this->bkc;}
 bool Board::getbqc() const {return this->bkc;}
-int Board::getTurn() const {return this->bqc;}
+int Board::getTurn() const {return this->turn;}
 int Board::getMoveRule() const {return this->moveRule;}
 int Board::getFullMoves() const {return this->fullMoves;}
 
@@ -43,4 +43,17 @@ coords Board::getEnPassant() const {
 
 void Board::setEnPassant(coords c) {
 	this->enPassant = c;
+}
+
+void Board::setwkc(bool right) {
+	this->wkc = right;
+}
+void Board::setwqc(bool right) {
+	this->wqc = right;
+}
+void Board::setbkc(bool right) {
+	this->bkc = right;
+}
+void Board::setbqc(bool right) {
+	this->bqc = right;
 }

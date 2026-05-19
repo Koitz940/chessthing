@@ -50,6 +50,7 @@ typedef enum moveType {
 	B,
 	N,
 	CASTLE,
+	ENPASSANT,
 } moveType;
 
 typedef struct position {
