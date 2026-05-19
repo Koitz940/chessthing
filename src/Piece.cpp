@@ -109,6 +109,15 @@ int	Piece::calculateLegalPawnMoves(Board& board) {
 					this->addMove(this->rank + 1, this->file, MOVE);
 				}
 			}
+			if (this->rank == 1 && !board.board[this->rank + 2][this->file].getType()) {
+				copy = board;
+				copy.board[this->rank + 2][this->file] = *this;
+				copy.board[this->rank][this->file] = Piece();
+				if (!copy.isCheck(this->col)) {
+					count++;
+					this->addMove(this->rank + 2, this->file, MOVE);
+				}
+			}
 		}
 
 		for (int i = 0; i < 2; i++) {
@@ -116,9 +125,16 @@ int	Piece::calculateLegalPawnMoves(Board& board) {
 				copy = board;
 				copy.board[this->rank + 1][this->file + fi[i]] = *this;
 				copy.board[this->rank][this->file] = Piece();
-				if (!copy.isCheck(this->col)) {
+				if (this->rank == 6) {
+					count += 4;
+					this->addMove(7, this->file + fi[i], CAPTURE_Q);
+					this->addMove(7, this->file + fi[i], CAPTURE_R);
+					this->addMove(7, this->file + fi[i], CAPTURE_N);
+					this->addMove(7, this->file + fi[i], CAPTURE_B);
+				}
+				else  {
 					count++;
-					this->addMove(this->rank + 1, this->file + fi[i], CAPTURE);
+					this->addMove(this->rank + 1, this->file + fi[i], MOVE);
 				}
 			}
 		}
@@ -152,6 +168,15 @@ int	Piece::calculateLegalPawnMoves(Board& board) {
 					this->addMove(this->rank - 1, this->file, MOVE);
 				}
 			}
+			if (this->rank == 6 && !board.board[this->rank - 2][this->file].getType()) {
+				copy = board;
+				copy.board[this->rank - 2][this->file] = *this;
+				copy.board[this->rank][this->file] = Piece();
+				if (!copy.isCheck(this->col)) {
+					count++;
+					this->addMove(this->rank - 2, this->file, MOVE);
+				}
+			}
 		}
 
 		for (int i = 0; i < 2; i++) {
@@ -160,8 +185,17 @@ int	Piece::calculateLegalPawnMoves(Board& board) {
 				copy.board[this->rank - 1][this->file + fi[i]] = *this;
 				copy.board[this->rank][this->file] = Piece();
 				if (!copy.isCheck(this->col)) {
-					count++;
-					this->addMove(this->rank - 1, this->file + fi[i], CAPTURE);
+					if (this->rank == 1) {
+						count += 4;
+						this->addMove(0, this->file + fi[i], CAPTURE_Q);
+						this->addMove(0, this->file + fi[i], CAPTURE_R);
+						this->addMove(0, this->file + fi[i], CAPTURE_N);
+						this->addMove(0, this->file + fi[i], CAPTURE_B);
+					}
+					else  {
+						count++;
+						this->addMove(this->rank - 1, this->file + fi[i], CAPTURE);
+					}
 				}
 			}
 		}
@@ -380,7 +414,7 @@ int	Piece::calculateLegalKingMoves(Board& board) {
 			if (board.board[0][0].getPiece() != ROOK) {
 				board.setwqc(false);
 			}
-			else if (!board.board[0][3].getType() && !board.board[0][2].getType() && !board.isAtacked(this->col, getCoords(0, 4)) && !board.isAtacked(this->col, getCoords(0, 3)) && !board.isAtacked(this->col, getCoords(0, 2))) {
+			else if (!board.board[0][3].getType() && !board.board[0][2].getType() && !board.board[0][1].getType() && !board.isAtacked(this->col, getCoords(0, 4)) && !board.isAtacked(this->col, getCoords(0, 3)) && !board.isAtacked(this->col, getCoords(0, 2))) {
 				this->addMove(0, 2, CASTLE);
 				count++;
 			}
@@ -388,7 +422,7 @@ int	Piece::calculateLegalKingMoves(Board& board) {
 	}
 
 	if (this->col == BLACK && (board.getbkc() || board.getbqc())) {
-		if (this->rank || this->file != 4) {
+		if (this->rank != 7 || this->file != 4) {
 			board.setbkc(false);
 			board.setbqc(false);
 		}
@@ -405,7 +439,7 @@ int	Piece::calculateLegalKingMoves(Board& board) {
 			if (board.board[7][0].getPiece() != -ROOK) {
 				board.setbqc(false);
 			}
-			else if (!board.board[7][3].getType() && !board.board[7][2].getType() && !board.isAtacked(this->col, getCoords(7, 4)) && !board.isAtacked(this->col, getCoords(7, 3)) && !board.isAtacked(this->col, getCoords(7, 2))) {
+			else if (!board.board[7][3].getType() && !board.board[7][2].getType()  && !board.board[7][1].getType() && !board.isAtacked(this->col, getCoords(7, 4)) && !board.isAtacked(this->col, getCoords(7, 3)) && !board.isAtacked(this->col, getCoords(7, 2))) {
 				this->addMove(7, 2, CASTLE);
 				count++;
 			}

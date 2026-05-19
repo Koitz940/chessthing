@@ -185,6 +185,9 @@ void Board::fromFen(const std::string& fen) {
 			}
 		}
 		rank--;
+		if (file != 8)
+			throw(FenError("Line too short in given FEN representation, a chessboard has 8 files"));
+
 	}
 
 	if (!wk || !bk) {throw(FenError("Missing a king"));}
@@ -233,6 +236,9 @@ void Board::fromFen(const std::string& fen) {
 	} catch (std::exception& e) {
 		this->fullMoves = 100; //if too many moves, simply set the counter to 100
 	}
+
+	if (this->isCheck(-this->turn))
+		throw(FenError("Bad FEN, cannot be someone's turn if the other player is in check"));
 }
 
 std::ostream& operator<<(std::ostream& os, const Board& chess) {
@@ -249,7 +255,7 @@ std::ostream& operator<<(std::ostream& os, const Board& chess) {
 	}
 	os << std::endl;
 	os << "    a b c d e f g h\n\n";
-	os << chess.getfen() << "\n\nPOSIBLE MOVES\n---------------------------\n";
+	os << chess.getfen() << "\n\nPOSSIBLE MOVES\n---------------------------\n";
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
 			if (chess.board[i][j].getCol() == chess.getTurn()) {

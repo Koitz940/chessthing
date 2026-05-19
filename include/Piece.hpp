@@ -49,6 +49,10 @@ typedef enum moveType {
 	R,
 	B,
 	N,
+	CAPTURE_Q,
+	CAPTURE_R,
+	CAPTURE_N,
+	CAPTURE_B,
 	CASTLE,
 	ENPASSANT,
 } moveType;
