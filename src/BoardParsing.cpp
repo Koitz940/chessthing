@@ -161,11 +161,12 @@ void Board::fromFen(const std::string& fen) {
 				for (int i = 0; i < c - '0'; i++) {
 					if (file > 7)
 						throw (FenError("Line too long in given FEN representation, a chessboard has 8 files"));
-					this->board[rank][file] = Piece();
+					this->board[rank][file] = Piece(0, rank, file);
 					file++;
 				}
 			} else {
 				this->board[rank][file] = Piece(this->charToInt(c), rank, file);
+
 				if (c == 'k') {
 					if (bk) {
 						throw(FenError("Multiple black kings"));
@@ -253,7 +254,7 @@ std::ostream& operator<<(std::ostream& os, const Board& chess) {
 		for (int j = 0; j < 8; j++) {
 			if (chess.board[i][j].getCol() == chess.getTurn()) {
 				c = chess.letters[abs(board[i][j])];
-				os << (char)('a' + j) << (char)('1' + i) << (char)((board[i][j] > 0)? toupper(c): c) << ":"; 
+				os << (char)('a' + chess.board[i][j].getFile()) << (char)('1' + chess.board[i][j].getRank()) << (char)((board[i][j] > 0)? toupper(c): c) << ":"; 
 				for (move m: chess.board[i][j].getLegalMoves()) {
 					os << (char)(m.to.file + 'a') << (char)(m.to.rank + '1') << " ";
 				}
@@ -262,6 +263,7 @@ std::ostream& operator<<(std::ostream& os, const Board& chess) {
 		}
 	}
 
+	os << chess.getStatus();
 	return (os);
 }
 

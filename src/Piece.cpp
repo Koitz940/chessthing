@@ -55,7 +55,7 @@ Piece::Piece(int type, int col, int rank, int file): type(type), col(col), rank(
 	this->legalMoves = std::vector<move>();
 }
 
-Piece::Piece(int piece, int rank, int file): type(abs(piece)), col(piece < 0? -1: 1), rank(rank), file(file), moves{
+Piece::Piece(int piece, int rank, int file): type(abs(piece)), col(piece < 0? -1: piece? 1: 0), rank(rank), file(file), moves{
 	&Piece::calculateLegalNoneMoves,
     &Piece::calculateLegalPawnMoves,
 	&Piece::calculateLegalKingMoves,
@@ -71,6 +71,9 @@ Piece& Piece::operator=(const Piece& other) {
 	this->col = other.col;
 	this->type = other.type;
 	this->legalMoves = other.legalMoves;
+	this->legalMoves = std::vector<move>();
+	this->rank = other.rank;
+	this->file = other.file;
 	return (*this);
 }
 
@@ -181,7 +184,7 @@ int	Piece::calculateLegalBishopMoves(Board& board) {
 	int count = 0;
 	Board copy = board;
 
-	for (int i = 0; board.onBoard(this->rank + i, this->file + i) && board.board[this->rank + i][this->file + i].col != this->col; i++) {
+	for (int i = 1; board.onBoard(this->rank + i, this->file + i) && board.board[this->rank + i][this->file + i].col != this->col; i++) {
 		copy = board;
 		copy.board[this->rank + i][this->file + i] = *this;
 		copy.board[this->rank][this->file] = Piece();
@@ -195,7 +198,7 @@ int	Piece::calculateLegalBishopMoves(Board& board) {
 			count++;
 		}
 	}
-	for (int i = 0; board.onBoard(this->rank + i, this->file - i) && board.board[this->rank + i][this->file - i].col != this->col; i++) {
+	for (int i = 1; board.onBoard(this->rank + i, this->file - i) && board.board[this->rank + i][this->file - i].col != this->col; i++) {
 		copy = board;
 		copy.board[this->rank + i][this->file - i] = *this;
 		copy.board[this->rank][this->file] = Piece();
@@ -209,7 +212,7 @@ int	Piece::calculateLegalBishopMoves(Board& board) {
 			count++;
 		}
 	}
-	for (int i = 0; board.onBoard(this->rank - i, this->file + i) && board.board[this->rank - i][this->file + i].col != this->col; i++) {
+	for (int i = 1; board.onBoard(this->rank - i, this->file + i) && board.board[this->rank - i][this->file + i].col != this->col; i++) {
 		copy = board;
 		copy.board[this->rank - i][this->file + i] = *this;
 		copy.board[this->rank][this->file] = Piece();
@@ -223,7 +226,7 @@ int	Piece::calculateLegalBishopMoves(Board& board) {
 			count++;
 		}
 	}
-	for (int i = 0; board.onBoard(this->rank - i, this->file - i) && board.board[this->rank - i][this->file - i].col != this->col; i++) {
+	for (int i = 1; board.onBoard(this->rank - i, this->file - i) && board.board[this->rank - i][this->file - i].col != this->col; i++) {
 		copy = board;
 		copy.board[this->rank - i][this->file - i] = *this;
 		copy.board[this->rank][this->file] = Piece();
@@ -272,7 +275,7 @@ int Piece::calculateLegalRookMoves(Board& board) {
 	int count = 0;
 	Board copy;
 
-	for (int i = this->rank; board.onBoard(i, this->file) && board.board[i][this->file].col != this->col; i++) {
+	for (int i = this->rank + 1; board.onBoard(i, this->file) && board.board[i][this->file].col != this->col; i++) {
 		copy = board;
 		copy.board[i][this->file] = *this;
 		copy.board[this->rank][this->file] = Piece();
@@ -286,7 +289,7 @@ int Piece::calculateLegalRookMoves(Board& board) {
 			count++;
 		}
 	}
-	for (int i = this->rank; board.onBoard(i, this->file) && board.board[i][this->file].col != this->col; i--) {
+	for (int i = this->rank - 1; board.onBoard(i, this->file) && board.board[i][this->file].col != this->col; i--) {
 		copy = board;
 		copy.board[i][this->file] = *this;
 		copy.board[this->rank][this->file] = Piece();
@@ -300,7 +303,7 @@ int Piece::calculateLegalRookMoves(Board& board) {
 			count++;
 		}
 	}
-	for (int i = this->file; board.onBoard(this->rank, i) && board.board[this->rank][i].col != this->col; i++) {
+	for (int i = this->file + 1; board.onBoard(this->rank, i) && board.board[this->rank][i].col != this->col; i++) {
 		copy = board;
 		copy.board[this->rank][i] = *this;
 		copy.board[this->rank][this->file] = Piece();
@@ -314,7 +317,7 @@ int Piece::calculateLegalRookMoves(Board& board) {
 			count++;
 		}
 	}
-	for (int i = this->file; board.onBoard(this->rank, i) && board.board[this->rank][i].col != this->col; i--) {
+	for (int i = this->file - 1; board.onBoard(this->rank, i) && board.board[this->rank][i].col != this->col; i--) {
 		copy = board;
 		copy.board[this->rank][i] = *this;
 		copy.board[this->rank][this->file] = Piece();

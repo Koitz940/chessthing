@@ -29,6 +29,7 @@ bool Board::getwqc() const {return this->wqc;}
 bool Board::getbkc() const {return this->bkc;}
 bool Board::getbqc() const {return this->bkc;}
 int Board::getTurn() const {return this->turn;}
+int Board::getStatus() const {return this->status;}
 int Board::getMoveRule() const {return this->moveRule;}
 int Board::getFullMoves() const {return this->fullMoves;}
 
@@ -56,4 +57,19 @@ void Board::setbkc(bool right) {
 }
 void Board::setbqc(bool right) {
 	this->bqc = right;
+}
+
+int Piece::getFile() const {
+	return (this->file);
+}
+void Piece::setFile(int file) {
+	if (0 <= file && file <= 7)
+		this->file = file;
+}
+int Piece::getRank() const {
+	return (this->rank);
+}
+void Piece::setRank(int rank) {
+	if (0 <= rank && rank <= 7)
+		this->rank = rank;
 }

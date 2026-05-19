@@ -139,14 +139,11 @@ bool Board::isCheck(int col) {
 
 int Board::updateLegalMoves() {
 	int count = 0;
-
-	std::cout << *this;
 	
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
 			if (this->board[i][j].getCol() == this->turn) {
 				count += this->board[i][j].calculateLegalMoves(*this);
-				std::cout << *this;
 			}
 		}
 	}

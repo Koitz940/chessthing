@@ -2,7 +2,7 @@
 
 int main() {
 	try {
-		Board chess = Board("1B6/2n5/p1N1P2R/P1K3N1/4Pk2/1Q2p2p/6nP/1B4R1 w - - 0 1", FEN);
+		Board chess = Board("k7/8/1QK5/8/8/8/8/8 b - - 0 1", FEN);
 		chess.updateLegalMoves();
 		std::cout << chess << "\n";
 	} catch (std::exception &e) {

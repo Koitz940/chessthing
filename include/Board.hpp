@@ -56,6 +56,7 @@ class Board {
 		void setbkc(bool right);
 		void setbqc(bool right);
 		int getTurn() const;
+		int getStatus() const;
 		int getMoveRule() const;
 		int getFullMoves() const;
 		bool isValidFENchar(int c) const;

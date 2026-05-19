@@ -117,6 +117,10 @@ class Piece {
 		void setCol(int col);
 		int getPiece() const;
 		void setPiece(int piece);
+		int getFile() const;
+		void setFile(int piece);
+		int getRank() const;
+		void setRank(int piece);
 };
 
 #endif
