@@ -6,7 +6,7 @@
 /*   By: gcassi-d <gcassi-d@42urduliz.com>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/29 19:13:16 by gcassi-d          #+#    #+#             */
-/*   Updated: 2026/05/06 21:16:50 by gcassi-d         ###   ########.fr       */
+/*   Updated: 2026/05/23 18:57:19 by gcassi-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 #define START_POSITION "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 0"
 #define FEN 0
 #define ALG 1
+#define NO 1729
 
 enum type {
 	NONE,
@@ -58,14 +59,8 @@ typedef enum moveType {
 } moveType;
 
 typedef struct position {
-	size_t r1;
-	size_t r2;
-	size_t r3;
-	size_t r4;
-	size_t r5;
-	size_t r6;
-	size_t r7;
-	size_t r8;
+	unsigned int board[9];
+	int extra;
 }	pos;
 
 typedef struct coordinates {
@@ -112,6 +107,8 @@ class Piece {
 
 		int	calculateLegalMoves(Board& board);
 		const std::vector<move>& getLegalMoves() const;
+
+		void emptyMoves();
 		
 		bool isLegal(coords coord);
 

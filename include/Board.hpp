@@ -6,7 +6,7 @@
 /*   By: gcassi-d <gcassi-d@42urduliz.com>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/19 15:39:18 by gcassi-d          #+#    #+#             */
-/*   Updated: 2026/05/06 21:51:22 by gcassi-d         ###   ########.fr       */
+/*   Updated: 2026/05/23 17:18:38 by gcassi-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,12 +34,15 @@ class Board {
 		pos makePos() const;
 		void castlingfRightsHandler(const std::string& rights);
 		void makePassable(const coords);
+		void place(coords from, coords to);
 
 	public:
 		Board();
 		~Board();
 		Board(const Board& other);
 		Board(const std::string& s, int type);
+
+		Board newGame(std::string fen);
 		
 		Board& operator=(const Board& other);
 
@@ -64,10 +67,10 @@ class Board {
 		bool isCheck(int col);
 		bool isAtacked(int col, coords c);
 		int updateLegalMoves();
-		void place(coords from, coords to);
 		coords getEnPassant() const;
 		void setEnPassant(coords c);
 		bool onBoard(int rank, int file);
+		int makeMove(coords from, move to);
 
 		const char letters[9];
 
@@ -90,6 +93,13 @@ class Board {
 				const char* what() const throw();
 				UnknownStringRepresentationError();
 		};
+
+		class MoveError: public std::exception {
+			const char* msg;
+			public:
+				const char* what() const throw();
+				MoveError(const char* msg);
+		};
 };
 
 coords getCoords(int rank, int file);
@@ -97,5 +107,6 @@ std::ostream& operator<<(std::ostream& os, const Board& chess);
 std::ostream& operator<<(std::ostream& os, const coords& coord);
 
 bool operator==(const coords& a, const coords& b);
+bool operator==(const move& a, const move& b);
 
 #endif

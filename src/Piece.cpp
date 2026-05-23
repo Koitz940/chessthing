@@ -6,7 +6,7 @@
 /*   By: gcassi-d <gcassi-d@42urduliz.com>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/29 19:34:08 by gcassi-d          #+#    #+#             */
-/*   Updated: 2026/05/06 21:17:28 by gcassi-d         ###   ########.fr       */
+/*   Updated: 2026/05/23 17:24:19 by gcassi-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,9 +86,13 @@ int	Piece::calculateLegalNoneMoves(Board& board) {
 	return (0);
 }
 
+void Piece::emptyMoves() {
+	this->legalMoves.clear();
+}
+
 int	Piece::calculateLegalPawnMoves(Board& board) {
 	int count = 0;
-	Board copy = board;
+	Board copy(board);
 	int fi[2] = {1, -1};
 	
 	if (this->col == WHITE) {
@@ -216,7 +220,7 @@ int	Piece::calculateLegalPawnMoves(Board& board) {
 
 int	Piece::calculateLegalBishopMoves(Board& board) {
 	int count = 0;
-	Board copy = board;
+	Board copy(board);
 
 	for (int i = 1; board.onBoard(this->rank + i, this->file + i) && board.board[this->rank + i][this->file + i].col != this->col; i++) {
 		copy = board;
@@ -279,7 +283,7 @@ int	Piece::calculateLegalBishopMoves(Board& board) {
 
 int	Piece::calculateLegalKnightMoves(Board& board) {
 	int count = 0;
-	Board copy;
+	Board copy(board);
 	int ra[] = {1, 1, -1, -1, 2, -2, 2, -2};
 	int fa[] = {2, -2, 2, -2, 1, 1, -1, -1};
 	int r;
@@ -307,7 +311,7 @@ int	Piece::calculateLegalKnightMoves(Board& board) {
 
 int Piece::calculateLegalRookMoves(Board& board) {
 	int count = 0;
-	Board copy;
+	Board copy(board);
 
 	for (int i = this->rank + 1; board.onBoard(i, this->file) && board.board[i][this->file].col != this->col; i++) {
 		copy = board;
@@ -374,7 +378,7 @@ int	Piece::calculateLegalQueenMoves(Board& board) {
 
 int	Piece::calculateLegalKingMoves(Board& board) {
 	int count = 0;
-	Board copy = board;
+	Board copy(board);
 	int r, f;
 
 	for (int i = -1; i < 2; i++) {

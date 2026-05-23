@@ -6,7 +6,7 @@
 /*   By: gcassi-d <gcassi-d@42urduliz.com>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/19 16:06:23 by gcassi-d          #+#    #+#             */
-/*   Updated: 2026/05/06 21:53:03 by gcassi-d         ###   ########.fr       */
+/*   Updated: 2026/05/23 18:53:10 by gcassi-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,16 @@ Board::Board(const std::string& s, int type): letters("_pkqrbnp") {
 		}
 		default: {throw (UnknownStringRepresentationError());}
 	};
+}
+
+Board Board::newGame(std::string fen) {
+	Board b(fen, FEN);
+	int flag = b.updateLegalMoves();
+	b.status = flag;
+
+	pos start = this->makePos();
+	this->drawTracker[start] = 1;
+	return b;
 }
 
 Board& Board::operator=(const Board& other) {
@@ -67,64 +77,28 @@ coords getCoords(int rank, int file) {
 pos Board::makePos() const {
 	pos p;
 
-	p.r1 = 0;
 	for (int i = 0; i < 8; i++) {
-		p.r1 += abs(this->board[0][i].getType()) + ((this->board[0][i].getCol() == BLACK) << 4);
-		p.r1 <<= 8;
+		p.board[i] = 0;
+		for (int j = 0; j < 8; j++) {
+			p.board[i] <<= 4;
+			p.board[i] += this->board[i][j].getType();
+			p.board[8] <<= 1;
+			p.board[8] += this->board[i][j].getCol() == WHITE;
+		}
 	}
-
-	p.r2 = 0;
-	for (int i = 0; i < 8; i++) {
-		p.r2 += abs(this->board[1][i].getType()) + ((this->board[1][i].getCol() == BLACK) << 4);
-		p.r2 <<= 8;
-	}
-
-	p.r3 = 0;
-	for (int i = 0; i < 8; i++) {
-		p.r3 += abs(this->board[2][i].getType()) + ((this->board[2][i].getCol() == BLACK) << 4);
-		p.r3 <<= 8;
-	}
-
-	p.r4 = 0;
-	for (int i = 0; i < 8; i++) {
-		p.r4 += abs(this->board[3][i].getType()) + ((this->board[3][i].getCol() == BLACK) << 4);
-		p.r4 <<= 8;
-	}
-
-	p.r5 = 0;
-	for (int i = 0; i < 8; i++) {
-		p.r5 += abs(this->board[4][i].getType()) + ((this->board[4][i].getCol() == BLACK) << 4);
-		p.r5 <<= 8;
-	}
-
-
-	p.r6 = 0;
-	for (int i = 0; i < 8; i++) {
-		p.r6 += abs(this->board[5][i].getType()) + ((this->board[5][i].getCol() == BLACK) << 4);
-		p.r6 <<= 8;
-	}
-
-	p.r7 = 0;
-	for (int i = 0; i < 8; i++) {
-		p.r7 += abs(this->board[6][i].getType()) + ((this->board[6][i].getCol() == BLACK) << 4);
-		p.r7 <<= 8;
-	}
-
-	p.r8 = 0;
-	for (int i = 0; i < 8; i++) {
-		p.r8 += abs(this->board[7][i].getType()) + ((this->board[7][i].getCol() == BLACK) << 4);
-		p.r8 <<= 8;
-	}
-
+	p.extra = ((((((((this->turn == WHITE) << 1) + this->bkc) << 1) + this->bqc) << 1) + this->wkc) << 1) + this->wqc;
+	p.extra = (((p.extra << 4) + enPassant.rank == NO? 0: enPassant.rank) << 4) + enPassant.file == NO? 0: enPassant.file;
 	return p;
 }
 
 Board::AlgError::AlgError(const char* msg): msg(msg) {}
 Board::FenError::FenError(const char* msg): msg(msg) {}
+Board::MoveError::MoveError(const char* msg): msg(msg) {}
 Board::UnknownStringRepresentationError::UnknownStringRepresentationError() {}
 
 const char* Board::AlgError::what() const throw() {return this->msg;}
 const char* Board::FenError::what() const throw() {return this->msg;}
+const char* Board::MoveError::what() const throw() {return this->msg;}
 const char* Board::UnknownStringRepresentationError::what() const throw() {return "Unknown game string representation type";}
 
 bool Board::isCheck(int col) {
@@ -171,10 +145,8 @@ void Board::makePassable(const coords c) {
 }
 
 void Board::place(coords from, coords to) {
-	if (this->board[from.rank][from.file].getType()) {
-		this->board[to.rank][to.file] = this->board[from.rank][from.file];
-		this->board[from.rank][from.file] = Piece();
-	}
+	this->board[to.rank][to.file] = this->board[from.rank][from.file];
+	this->board[from.rank][from.file] = Piece();
 }
 
 bool Board::isAtacked(int col, coords c) {
@@ -272,4 +244,75 @@ bool Board::isAtacked(int col, coords c) {
 	}
 
 	return (false);
+}
+
+int Board::makeMove(coords from, move to) {
+	if (!onBoard(from.rank, from.file))
+		throw (MoveError("Square outside of the board"));
+
+	Piece& p = this->board[from.rank][from.file];
+
+	if (p.getCol() != this->turn)
+		throw (MoveError("Square empty or colour of piece attempted to move of the wrong colour"));
+	
+	bool found = false;
+	for (auto it: p.getLegalMoves()) {
+		if (it == to)
+			found = true;
+	}
+	if (!found) {
+		throw(MoveError("Attempted to make an illegal move"));
+	}
+
+	for (int i = 0; i < 8; i++) {
+		for (int j = 0; j < 8; j++)
+			this->board[i][j].emptyMoves();
+	}
+	
+	if (!this->specialMove(from, to)) {
+		this->place(from, to.to);
+		this->enPassant = getCoords(NO, NO);
+	}
+
+	pos cur = this->makePos();
+	if (this->drawTracker.find(cur) != this->drawTracker.end())
+	{
+		this->drawTracker[cur] += 1;
+		if (this->drawTracker[cur] == 3) {
+			this->status = DRAW;
+			return (DRAW);
+		}
+	} else{
+		this->drawTracker[cur] = 1;
+	}
+
+	this->moveRule += 1;
+	if (this->turn == BLACK)
+		this->fullMoves += 1;
+	if (this->moveRule == 99) {
+		this->status = DRAW;
+		return (DRAW);
+	}
+	this->turn = -this->turn;
+
+	if (from == getCoords(0, 4)) {
+		this->wkc = false;
+		this->wqc = false;
+	}
+	else if (from == getCoords(7, 4)) {
+		this->bkc = false;
+		this->bqc = false;
+	}
+	else if (from == getCoords(0, 0) || to.to == getCoords(0, 0))
+		this->wqc = false;
+	else if (from == getCoords(0, 7) || to.to == getCoords(0, 7))
+		this->wkc = false;
+	else if (from == getCoords(7, 0) || to.to == getCoords(7, 0))
+		this->bqc = false;
+	else if (from == getCoords(7, 7) || to.to == getCoords(7, 7))
+		this->bkc = false;
+
+	int flag = this->updateLegalMoves();
+	this->status = flag;
+	return (flag);
 }

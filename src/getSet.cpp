@@ -6,7 +6,7 @@
 /*   By: gcassi-d <gcassi-d@42urduliz.com>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/25 13:14:09 by gcassi-d          #+#    #+#             */
-/*   Updated: 2026/05/06 21:09:34 by gcassi-d         ###   ########.fr       */
+/*   Updated: 2026/05/23 17:02:07 by gcassi-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,10 @@ int Board::getFullMoves() const {return this->fullMoves;}
 bool operator==(const coords& a, const coords& b)
 {
 	return a.file == b.file && a.rank == b.rank;
+}
+
+bool operator==(const move& a, const move& b) {
+	return (a.t == b.t && a.to == b.to);
 }
 
 coords Board::getEnPassant() const {
