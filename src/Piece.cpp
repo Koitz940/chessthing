@@ -70,7 +70,6 @@ Piece::Piece(int piece, int rank, int file): type(abs(piece)), col(piece < 0? -1
 Piece& Piece::operator=(const Piece& other) {
 	this->col = other.col;
 	this->type = other.type;
-	this->legalMoves = other.legalMoves;
 	this->legalMoves = std::vector<move>();
 	this->rank = other.rank;
 	this->file = other.file;
@@ -94,6 +93,13 @@ int	Piece::calculateLegalPawnMoves(Board& board) {
 	int count = 0;
 	Board copy(board);
 	int fi[2] = {1, -1};
+
+	for (int i = 0; i < 8; i++) {
+		for (int j = 0; j < 8; j++) {
+			if (copy.board[i][j].type == 0 && copy.board[i][j].col != 0)
+				std::cout << i << " " << j << " issue" << "\n";
+		}
+	}
 	
 	if (this->col == WHITE) {
 		if (!board.board[this->rank + 1][this->file].getType()) {
@@ -138,7 +144,7 @@ int	Piece::calculateLegalPawnMoves(Board& board) {
 				}
 				else  {
 					count++;
-					this->addMove(this->rank + 1, this->file + fi[i], MOVE);
+					this->addMove(this->rank + 1, this->file + fi[i], CAPTURE);
 				}
 			}
 		}
@@ -391,7 +397,7 @@ int	Piece::calculateLegalKingMoves(Board& board) {
 			copy.board[r][f] = *this;
 			copy.board[r - i][f - j] = Piece();
 			if (!copy.isCheck(this->col)) {
-				if (copy.board[r][f].getCol()) 
+				if (board.board[r][f].getCol()) 
 					this->addMove(r, f, CAPTURE);
 				else
 					this->addMove(r, f, MOVE);

@@ -35,6 +35,7 @@ class Board {
 		void castlingfRightsHandler(const std::string& rights);
 		void makePassable(const coords);
 		void place(coords from, coords to);
+		bool specialMove(coords from, move to);
 
 	public:
 		Board();

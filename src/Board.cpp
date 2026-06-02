@@ -42,7 +42,7 @@ Board Board::newGame(std::string fen) {
 	b.status = flag;
 
 	pos start = this->makePos();
-	this->drawTracker[start] = 1;
+	this->drawTracker.insert({start, 1});
 	return b;
 }
 
@@ -146,7 +146,7 @@ void Board::makePassable(const coords c) {
 
 void Board::place(coords from, coords to) {
 	this->board[to.rank][to.file] = this->board[from.rank][from.file];
-	this->board[from.rank][from.file] = Piece();
+	this->board[from.rank][from.file].setPiece(0);
 }
 
 bool Board::isAtacked(int col, coords c) {
@@ -278,12 +278,12 @@ int Board::makeMove(coords from, move to) {
 	if (this->drawTracker.find(cur) != this->drawTracker.end())
 	{
 		this->drawTracker[cur] += 1;
-		if (this->drawTracker[cur] == 3) {
+		if (this->drawTracker.at(cur) == 3) {
 			this->status = DRAW;
 			return (DRAW);
 		}
 	} else{
-		this->drawTracker[cur] = 1;
+		this->drawTracker.insert({cur, 1});
 	}
 
 	this->moveRule += 1;
@@ -315,4 +315,41 @@ int Board::makeMove(coords from, move to) {
 	int flag = this->updateLegalMoves();
 	this->status = flag;
 	return (flag);
+}
+
+bool Board::specialMove(coords from, move to) {
+	int piece;
+	coords rook;
+
+	if (this->board[from.rank][from.file].getType() == PAWN && abs(from.rank - to.to.rank) == 2) {
+		this->enPassant = to.to;
+		this->place(from, to.to);
+	}
+	else if (to.t == MOVE || to.t == CAPTURE)
+		return false;
+	else if (to.t <= CAPTURE_N) {
+		piece = (to.t - 2) % 4;
+		this->board[to.to.rank][to.to.file].setPiece(this->turn * (piece + 2));
+		this->board[from.rank][from.file].setPiece(0);
+		this->enPassant = getCoords(NO, NO);
+	}
+	else if (to.t == ENPASSANT) {
+		this->place(from, to.to);
+		this->board[from.rank][to.to.file].setPiece(0);
+		this->enPassant = getCoords(NO, NO);
+	}
+	else {
+		this->place(from, to.to);
+		rook = getCoords(from.rank, to.to.file == 6? 7: 0);
+		this->place(getCoords(from.rank, (from.rank + to.to.rank) / 2), rook);
+		this->enPassant = getCoords(NO, NO);
+		if (this->turn == WHITE) {
+			this->wkc = false;
+			this->wqc = false;
+		} else {
+			this->bkc = false;
+			this->bqc = false;
+		}
+	}
+	return true;
 }

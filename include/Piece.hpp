@@ -15,11 +15,13 @@
 
 #include <string>
 #include <map>
+#include <unordered_map>
 #include <vector>
 #include <exception>
 #include <sstream>
 #include <iostream>
 #include <algorithm>
+#include <cstdint>
 
 #define START_POSITION "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 0"
 #define FEN 0
@@ -52,15 +54,39 @@ typedef enum moveType {
 	N,
 	CAPTURE_Q,
 	CAPTURE_R,
-	CAPTURE_N,
 	CAPTURE_B,
+	CAPTURE_N,
 	CASTLE,
 	ENPASSANT,
 } moveType;
 
 typedef struct position {
-	unsigned int board[9];
-	int extra;
+	uint32_t board[9];
+	uint32_t extra;
+
+	bool operator<(const position& other) const {
+        for (int i = 0; i < 9; i++) {
+			if (board[i] != other.board[i])
+				return (board[i] < other.board[i]);
+		}
+		return extra < other.extra;
+    }
+
+	bool operator>(const position& other) const {
+        for (int i = 0; i < 9; i++) {
+			if (board[i] != other.board[i])
+				return (board[i] > other.board[i]);
+		}
+		return extra > other.extra;
+    }
+
+	bool operator==(const position& other) const {
+        for (int i = 0; i < 9; i++) {
+			if (board[i] != other.board[i])
+				return (false);
+		}
+		return extra == other.extra;
+    }
 }	pos;
 
 typedef struct coordinates {

@@ -161,7 +161,7 @@ void Board::fromFen(const std::string& fen) {
 				for (int i = 0; i < c - '0'; i++) {
 					if (file > 7)
 						throw (FenError("Line too long in given FEN representation, a chessboard has 8 files"));
-					this->board[rank][file] = Piece(0, rank, file);
+					this->board[rank][file] = Piece(0, 0, rank, file);
 					file++;
 				}
 			} else {
