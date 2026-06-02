@@ -26,16 +26,16 @@
 #define START_POSITION "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 0"
 #define FEN 0
 #define ALG 1
-#define NO 1729
+#define NO -1
 
 enum type {
 	NONE,
 	PAWN,
-	KING,
 	QUEEN,
 	ROOK,
 	BISHOP,
 	KNIGHT,
+	KING,
 };
 
 enum status {
@@ -99,6 +99,12 @@ typedef struct move {
 	moveType t;
 } move;
 
+typedef struct fullmove {
+	coords to;
+	moveType t;
+	coords from;
+} fmove;
+
 class Board;
 
 class Piece {
@@ -137,6 +143,7 @@ class Piece {
 		void emptyMoves();
 		
 		bool isLegal(coords coord);
+		bool isMoveLegal(move m);
 
 		int getType() const;
 		void setType(int type);
@@ -148,6 +155,8 @@ class Piece {
 		void setFile(int piece);
 		int getRank() const;
 		void setRank(int piece);
+		char getletter() const;
+		char getletter(int type, int col) const;
 };
 
 #endif

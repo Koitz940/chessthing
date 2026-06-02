@@ -12,17 +12,17 @@
 
 #include "Board.hpp"
 
-Board::Board(): letters("_pkqrbnp") {
+Board::Board(): letters("_pqrbnkp") {
 	this->fromFen(START_POSITION);
 }
 
 Board::~Board() {}
 
-Board::Board(const Board& other): letters("_pkqrbnp") {
+Board::Board(const Board& other): letters("_pqrbnkp") {
 	*this = other;
 }
 
-Board::Board(const std::string& s, int type): letters("_pkqrbnp") {
+Board::Board(const std::string& s, int type): letters("_pqrbnkp") {
 	switch (type) {
 		case ALG: {
 			this->fromAlg(s);
@@ -87,7 +87,7 @@ pos Board::makePos() const {
 		}
 	}
 	p.extra = ((((((((this->turn == WHITE) << 1) + this->bkc) << 1) + this->bqc) << 1) + this->wkc) << 1) + this->wqc;
-	p.extra = (((p.extra << 4) + enPassant.rank == NO? 0: enPassant.rank) << 4) + enPassant.file == NO? 0: enPassant.file;
+	p.extra = (((p.extra << 4) + (enPassant.rank == NO? 0: enPassant.rank)) << 4) + (enPassant.file == NO? 0: enPassant.file);
 	return p;
 }
 
@@ -146,6 +146,8 @@ void Board::makePassable(const coords c) {
 
 void Board::place(coords from, coords to) {
 	this->board[to.rank][to.file] = this->board[from.rank][from.file];
+	this->board[to.rank][to.file].setRank(to.rank);
+	this->board[to.rank][to.file].setFile(to.file);
 	this->board[from.rank][from.file].setPiece(0);
 }
 

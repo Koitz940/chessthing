@@ -6,7 +6,7 @@ RM = rm -f
 INCLUDE_DIR	= include
 INCLUDES	= -I$(INCLUDE_DIR)
 
-SRC =Board.cpp BoardParsing.cpp getSet.cpp main.cpp Piece.cpp
+SRC =Board.cpp BoardParsing.cpp getSet.cpp main.cpp Piece.cpp SANParser.cpp
 
 OBJ_DIR = obj
 

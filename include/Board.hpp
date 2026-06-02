@@ -13,7 +13,7 @@
 #ifndef BOARD_HPP
 #define BOARD_HPP
 
-#include "Piece.hpp"
+#include "SANParser.hpp"
 
 class Board {
 	protected:
@@ -106,6 +106,7 @@ class Board {
 coords getCoords(int rank, int file);
 std::ostream& operator<<(std::ostream& os, const Board& chess);
 std::ostream& operator<<(std::ostream& os, const coords& coord);
+std::ostream& operator<<(std::ostream& os, const Piece& piece);
 
 bool operator==(const coords& a, const coords& b);
 bool operator==(const move& a, const move& b);

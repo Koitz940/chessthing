@@ -53,7 +53,7 @@ std::string Board::getfen() const {
 
 	res.push_back(' ');
 
-	if (this->enPassant == getCoords(-1, -1))
+	if (this->enPassant == getCoords(NO, NO))
 		res.push_back('-'); 
 	else {
 		res.push_back(this->enPassant.file + 'a');
@@ -208,7 +208,7 @@ void Board::fromFen(const std::string& fen) {
 	if (sections[3].size() == 1) {
 		if (sections[3][0] != '-')
 			throw (FenError("Incorrect no en-passant-able pawns flag, use '-'"));
-		this->enPassant = getCoords(-1, -1);
+		this->enPassant = getCoords(NO, NO);
 	} else {
 		if (sections[3][0] > 'h' || sections[3][0] < 'a' || (sections[3][1] != '3' && sections[3][1] != '6'))
 			throw (FenError("Incorrect en-passant-able pawn representation"));
@@ -259,12 +259,7 @@ std::ostream& operator<<(std::ostream& os, const Board& chess) {
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
 			if (chess.board[i][j].getCol() == chess.getTurn()) {
-				c = chess.letters[abs(board[i][j])];
-				os << (char)('a' + chess.board[i][j].getFile()) << (char)('1' + chess.board[i][j].getRank()) << (char)((board[i][j] > 0)? toupper(c): c) << ":"; 
-				for (move m: chess.board[i][j].getLegalMoves()) {
-					os << (char)(m.to.file + 'a') << (char)(m.to.rank + '1') << " ";
-				}
-				os << "\n";
+				os << chess.board[i][j] << "\n";
 			}
 		}
 	}

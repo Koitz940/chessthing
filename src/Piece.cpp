@@ -20,11 +20,11 @@ bool Board::onBoard(int rank, int file) {
 Piece::Piece(): type(0), col(0), moves{
 	&Piece::calculateLegalNoneMoves,
     &Piece::calculateLegalPawnMoves,
-	&Piece::calculateLegalKingMoves,
 	&Piece::calculateLegalQueenMoves,
 	&Piece::calculateLegalRookMoves,
     &Piece::calculateLegalBishopMoves,
     &Piece::calculateLegalKnightMoves,
+	&Piece::calculateLegalKingMoves,
 } {
 	this->legalMoves = std::vector<move>();
 }
@@ -34,11 +34,11 @@ Piece::~Piece() {}
 Piece::Piece(const Piece& other): moves{
 	&Piece::calculateLegalNoneMoves,
     &Piece::calculateLegalPawnMoves,
-	&Piece::calculateLegalKingMoves,
 	&Piece::calculateLegalQueenMoves,
 	&Piece::calculateLegalRookMoves,
     &Piece::calculateLegalBishopMoves,
     &Piece::calculateLegalKnightMoves,
+	&Piece::calculateLegalKingMoves,
 } {
 	*this = other;
 }
@@ -46,11 +46,11 @@ Piece::Piece(const Piece& other): moves{
 Piece::Piece(int type, int col, int rank, int file): type(type), col(col), rank(rank), file(file), moves{
 	&Piece::calculateLegalNoneMoves,
     &Piece::calculateLegalPawnMoves,
-	&Piece::calculateLegalKingMoves,
 	&Piece::calculateLegalQueenMoves,
 	&Piece::calculateLegalRookMoves,
     &Piece::calculateLegalBishopMoves,
     &Piece::calculateLegalKnightMoves,
+	&Piece::calculateLegalKingMoves,
 } {
 	this->legalMoves = std::vector<move>();
 }
@@ -58,11 +58,11 @@ Piece::Piece(int type, int col, int rank, int file): type(type), col(col), rank(
 Piece::Piece(int piece, int rank, int file): type(abs(piece)), col(piece < 0? -1: piece? 1: 0), rank(rank), file(file), moves{
 	&Piece::calculateLegalNoneMoves,
     &Piece::calculateLegalPawnMoves,
-	&Piece::calculateLegalKingMoves,
 	&Piece::calculateLegalQueenMoves,
 	&Piece::calculateLegalRookMoves,
     &Piece::calculateLegalBishopMoves,
     &Piece::calculateLegalKnightMoves,
+	&Piece::calculateLegalKingMoves,
 } {
 	this->legalMoves = std::vector<move>();
 }
@@ -470,6 +470,14 @@ bool Piece::isLegal(const coords coord) {
 	return (false);
 }
 
+bool Piece::isMoveLegal(const move mm) {
+	for (auto m: this->legalMoves) {
+		if (m == mm)
+			return (true);
+	}
+	return (false);
+}
+
 int Piece::getType() const {
 	return (this->type);
 }
@@ -501,4 +509,62 @@ void Piece::addMove(int rank, int file, moveType type) {
 	n.to = getCoords(rank, file);
 	n.t = type;
 	this->legalMoves.push_back(n);
+}
+
+char Piece::getletter() const {
+	switch (this->type) {
+		case PAWN:
+			return this->col == WHITE? 'P': 'p';
+		case BISHOP:
+			return this->col == WHITE? 'B': 'b';
+		case ROOK:
+			return this->col == WHITE? 'R': 'r';
+		case KNIGHT:
+			return this->col == WHITE? 'N': 'n';
+		case KING:
+			return this->col == WHITE? 'K': 'k';
+		case QUEEN:
+			return this->col == WHITE? 'Q': 'q';
+	}
+	return '_';
+}
+
+char Piece::getletter(int type, int col) const {
+	switch (type) {
+		case PAWN:
+			return col == WHITE? 'P': 'p';
+		case BISHOP:
+			return col == WHITE? 'B': 'b';
+		case ROOK:
+			return col == WHITE? 'R': 'r';
+		case KNIGHT:
+			return col == WHITE? 'N': 'n';
+		case KING:
+			return col == WHITE? 'K': 'k';
+		case QUEEN:
+			return col == WHITE? 'Q': 'q';
+	}
+	return '_';
+}
+
+std::ostream& operator<<(std::ostream& os, const Piece& piece) {
+	os << (char)('a' + piece.getFile()) << (char)('1' + piece.getRank()) << piece.getletter() << ": ";
+	for (move m: piece.getLegalMoves()) {
+		if (m.t == CASTLE) {
+			os << "O-O";
+			if (m.to.file == 2)
+				os << "-O";
+			os << " ";
+			continue;
+		}
+		os << (char)(m.to.file + 'a') << (char)(m.to.rank + '1');
+		if (m.t == CAPTURE || (m.t >= CAPTURE_Q && m.t <= CAPTURE_N))
+			os << "x";
+		if (m.t >= Q && m.t <= CAPTURE_N) {
+			os << "=";
+			os << piece.getletter(2 + (m.t - 2) % 4, piece.getCol());
+		}
+		os << " ";
+	}
+	return os;
 }
