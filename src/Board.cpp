@@ -6,7 +6,7 @@
 /*   By: gcassi-d <gcassi-d@42urduliz.com>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/19 16:06:23 by gcassi-d          #+#    #+#             */
-/*   Updated: 2026/05/23 18:53:10 by gcassi-d         ###   ########.fr       */
+/*   Updated: 2026/06/08 11:15:21 by gcassi-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -289,11 +289,11 @@ int Board::makeMove(coords from, move to) {
 	}
 
 	this->moveRule += 1;
-	if (to.t || p.getType() == PAWN)
+	if ((to.t != MOVE && to.t != CASTLE) || p.getType() == PAWN)
 		this->moveRule = 0;
 	if (this->turn == BLACK)
 		this->fullMoves += 1;
-	if (this->moveRule == 99) {
+	if (this->moveRule == 100) {
 		this->status = DRAW;
 		return (DRAW);
 	}
