@@ -231,7 +231,7 @@ void Board::fromFen(const std::string& fen) {
 
 	try {
 		this->fullMoves = std::stoi(sections[5]);
-		if (this->fullMoves < 0)
+		if (this->fullMoves <= 0)
 			throw (FenError("Incorrect full-moves amount"));
 	} catch (std::exception& e) {
 		this->fullMoves = 100; //if too many moves, simply set the counter to 100
@@ -334,6 +334,6 @@ void Board::fromPgn(const std::string& pgn) {
 			this->status = DRAW;
 			return;
 		}
-		this->makeMove(turn);
+		this->play_move(turn);
 	}
 }

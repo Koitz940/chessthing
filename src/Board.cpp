@@ -246,7 +246,7 @@ bool Board::isAtacked(int col, coords c) {
 	return (false);
 }
 
-int Board::makeMove(coords from, move to) {
+int Board::play_move(coords from, move to) {
 	if (this->status)
 		throw (MoveError("attempted to make a move on a finished game"));
 	if (!onBoard(from.rank, from.file))
@@ -282,6 +282,7 @@ int Board::makeMove(coords from, move to) {
 		this->drawTracker[cur] += 1;
 		if (this->drawTracker.at(cur) == 3) {
 			this->status = DRAW;
+			this->updateLegalMoves();
 			return (DRAW);
 		}
 	} else{
@@ -293,9 +294,12 @@ int Board::makeMove(coords from, move to) {
 		this->moveRule = 0;
 	if (this->turn == BLACK)
 		this->fullMoves += 1;
-	if (this->moveRule == 99) {
-		this->status = DRAW;
-		return (DRAW);
+	if (this->moveRule == 100) {
+		int a = this->updateLegalMoves();
+		if (abs(a) != 1)
+			a = DRAW;
+		this->status = a;
+		return (a);
 	}
 	this->turn = -this->turn;
 
@@ -358,11 +362,11 @@ bool Board::specialMove(coords from, move to) {
 	return true;
 }
 
-int Board::makeMove(std::string san) {
+int Board::play_move(std::string san) {
 	SANParser p(san);
 	fmove m = p.getMove(san, *this);
 	move mm = {m.to, m.t};
-	return (this->makeMove(m.from, mm));
+	return (this->play_move(m.from, mm));
 }
 
 std::ostream& operator<<(std::ostream& os, const move& m) {
@@ -373,4 +377,15 @@ std::ostream& operator<<(std::ostream& os, const move& m) {
 std::ostream& operator<<(std::ostream& os, const fmove& m) {
 	os << "from: " << m.from << "; to: " << m.to << "; type: " << m.t;
 	return os;
+}
+
+int Board::play_move(coords from, coords destiny) {
+	Piece& p = this->board[from.rank][from.file];
+	if (p.getCol() != this->turn)
+		throw (MoveError("Attempted to move a piece of the wrong colour"));
+	for (auto it: p.getLegalMoves()) {
+		if (it.to == destiny)
+			return (this->play_move(from, it));
+	}
+	throw(MoveError("Attempted to play an illegal move"));
 }

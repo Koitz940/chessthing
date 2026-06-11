@@ -71,8 +71,9 @@ class Board {
 		coords getEnPassant() const;
 		void setEnPassant(coords c);
 		bool onBoard(int rank, int file);
-		int makeMove(coords from, move to);
-		int makeMove(std::string san);
+		int play_move(coords from, move to);
+		int play_move(std::string san);
+		int play_move(coords from, coords destiny);
 
 		const char letters[9];
 
