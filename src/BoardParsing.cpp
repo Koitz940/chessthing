@@ -6,7 +6,7 @@
 /*   By: gcassi-d <gcassi-d@42urduliz.com>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/24 22:16:52 by gcassi-d          #+#    #+#             */
-/*   Updated: 2026/05/06 22:55:00 by gcassi-d         ###   ########.fr       */
+/*   Updated: 2026/06/12 12:53:28 by gcassi-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,8 +122,13 @@ static bool is_number(const std::string& s)
 
 void Board::fromFen(const std::string& fen) {
 	this->status = CONTINUE;
-	this->cur = std::vector<Piece*>();
+	this->matTrack = std::map<int, int>();
 	
+	for (int i = -KING; i <= KING; i++)
+		this->matTrack.insert({i, 0});
+	
+	this->matTrack.at(NONE) = 69;
+
 	std::vector<std::string> sections;
     std::istringstream f(fen);
     std::string s;    
@@ -166,6 +171,7 @@ void Board::fromFen(const std::string& fen) {
 				}
 			} else {
 				this->board[rank][file] = Piece(this->charToInt(c), rank, file);
+				this->matTrack.at(this->charToInt(c)) += 1;
 
 				if (c == 'k') {
 					if (bk) {
