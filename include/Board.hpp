@@ -75,6 +75,7 @@ class Board {
 		int play_move(coords from, move to);
 		int play_move(std::string san);
 		int play_move(coords from, coords destiny);
+		int countMaterial();
 
 		const char letters[9];
 

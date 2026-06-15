@@ -425,3 +425,31 @@ bool Board::insufficientMaterial() {
 	
 	return (true);
 }
+
+static int value(int piece) {
+	switch (abs(piece))
+	{
+	case NONE:
+		return 0;
+	case KING:
+		return 0;
+	case QUEEN:
+		return 9;
+	case PAWN:
+		return 1;
+	case ROOK:
+		return 5;
+	default:
+		return 3;
+	}
+	return 0;
+}
+
+int Board::countMaterial() {
+	int count = 0;
+
+	for (int i = -KNIGHT; i <= KNIGHT; i++) {
+		count += this->matTrack[i] * value(i);
+	}
+	return count;
+}
